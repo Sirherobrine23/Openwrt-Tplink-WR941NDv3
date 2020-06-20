@@ -6,7 +6,7 @@
 # Blog: https://p3terx.com
 #=================================================
 
-name: Openwrt WR941ND
+name: OpenWRT Tp Link WR941NDv3
 
 on:
   push:
@@ -14,17 +14,19 @@ on:
       - master
     paths:
       - 'wr941nd.config'
-      - 'wr941nd.sh'
   schedule:
-    - cron: 40 15 1/1 * *
-#  watch:
-#    types: started
+    - cron: 40 15,18 1/1 * *
+  watch:
+    types: started
 
 env:
   REPO_URL: https://github.com/openwrt/openwrt
   REPO_BRANCH: openwrt-19.07
-  CONFIG_FILE: wr941nd.config
-  DIY_SH: wr941nd.sh
+  REPO_URLS: https://github.com/openwrt/openwrt
+  REPO_BRANCHS: master
+  CONFIG_FILE: x64.config
+  DIY_P1_SH: diy-part1.sh
+  DIY_P2_SH: diy-part2.sh
   SSH_ACTIONS: false
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
@@ -32,49 +34,56 @@ env:
   TZ: America/Sao_Paulo
 
 jobs:
-  WR941NDv3:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-18.04
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
-    - name: Checando
+    - name: Checkout
       uses: actions/checkout@master
 
-    - name: Inicializando environment
+    - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo swapoff /swapfile
-        sudo rm -rf /swapfile /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
-        sudo -E apt-get -qq install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint build-essential libncurses5-dev gawk git libssl-dev gettext zlib1g-dev swig unzip time build-essential libncurses5-dev gawk git libssl-dev gettext unzip zlib1g-dev file python libncurses5-dev zlib1g-dev mkisofs gawk antlr3 gperf build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf
+        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-1804)
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
-       
-
-    - name: Clonando Codigo do Repositorio
-      run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
-
-    - name: Atualizando os Feeds
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+    - name: Clone source code
+      working-directory: /workdir
+      run: |
+        df -hT $PWD
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+    - name: Load custom feeds
+      run: |
+        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        chmod +x $DIY_P1_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P1_SH
+    - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
 
-    - name: Instalando os Feeds
+    - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
 
-    - name: Carregando Configurações Personalizadas
+    - name: Load custom configuration
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        chmod +x $DIY_SH
+        chmod +x $DIY_P2_SH
         cd openwrt
-        ../$DIY_SH
-
-    - name: Conexão SSH para o Actions
+        $GITHUB_WORKSPACE/$DIY_P2_SH
+    - name: SSH connection to Actions
       uses: P3TERX/debugger-action@master
       if: env.SSH_ACTIONS == 'true' || contains(github.event.action, 'ssh')
 
-    - name: Download dos Pacotes
+    - name: Download package
       id: package
       run: |
         cd openwrt
@@ -82,23 +91,28 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-
-    - name: Copilando o Firmaware
+    - name: Compile the firmware
       id: compile
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 || make -j1 V=s V=s
+        make -j$(nproc) || make -j1 || make -j1 V=s
         echo "::set-output name=status::success"
+        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+        [ -s DEVICE_NAME ] && echo "::set-env name=DEVICE_NAME::_$(cat DEVICE_NAME)"
+        echo "::set-env name=FILE_DATE::_$(date +"%Y%m%d%H%M")"
+    - name: Check space usage
+      if: (!cancelled())
+      run: df -hT
 
-    - name: Upload do Diretorio BIN
+    - name: Upload bin directory
       uses: actions/upload-artifact@master
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
-        name: OpenWrt_bin
+        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/bin
 
-    - name: Organizando os Arquivos
+    - name: Organize files
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
@@ -106,21 +120,15 @@ jobs:
         rm -rf packages
         echo "::set-env name=FIRMWARE::$PWD"
         echo "::set-output name=status::success"
-
-    - name: Upload do Diretorio Do Firmware
+    - name: Upload firmware directory
       uses: actions/upload-artifact@master
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: OpenWrt_firmware
+        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
     - name: Echo
       run: echo "${{ env.FIRMWARE }}"
-
-#    - name: Empacotando
-#      run: |
-#        cd openwrt/bin/targets/ar71xx/tiny
-#        zip --junk-paths OpenWrt_WR941NDv3 -r *
 
     - name: Gerando Tag
       id: tag
@@ -128,9 +136,7 @@ jobs:
       run: |
         echo ::set-env name=RELEASE_NAME::"$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")-OpenWrt_WR941NDv3"
         echo ::set-env name=RELEASE_TAG::"$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"
-        echo "Build Actions" >> release.txt
-        echo "OpenWRT Tp-Link WR941NDv3" >> release.txt
-        echo "© Sirherobrine23" >> release.txt
+        echo "OpenWRT to ${{ env.DEVICE_NAME }}, Date: ${{ env.FILE_DATE }}" >> release.txt
         echo "::set-output name=status::success"
     
     - name: Upload so Firmware para o Release
@@ -139,7 +145,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
       with:
-        name: ${{ env.RELEASE_NAME }}
+        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: ${{ env.FIRMWARE }}/*
         tag_name: ${{ env.RELEASE_TAG }}
         body_path: release.txt
-        files: openwrt/bin/targets/ar71xx/tiny/*
