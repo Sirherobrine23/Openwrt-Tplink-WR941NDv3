@@ -24,6 +24,7 @@ env:
   REPO_BRANCH: openwrt-19.07
   REPO_URLS: https://github.com/openwrt/openwrt
   REPO_BRANCHS: master
+  FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: x64.config
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
