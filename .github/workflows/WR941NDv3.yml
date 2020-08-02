@@ -15,7 +15,7 @@ on:
     paths:
       - 'wr941nd.config'
   schedule:
-    - cron: 40 15,18 * * 4,2,7
+    - cron: 40 15,18 * * 2,4,6
   watch:
     types: started
 
