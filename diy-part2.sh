@@ -15,4 +15,5 @@ sed -i 's/set wireless.radio${devidx}.disabled=1/set wireless.radio${devidx}.dis
 sed -i 's/set wireless.default_radio${devidx}.ssid=OpenWrt/set wireless.default_radio${devidx}.ssid=Openwrt-WR941NDv3/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
 # meus pacotes (BETA)
 wget https://script.sirherobrine23.org/openwrt-internet-status.sh -O package/base-files/files/sbin/status;chmod +x package/base-files/files/sbin/status;chmod 775 package/base-files/files/sbin/status
-# wget https://script.sirherobrine23.org/openwrt-internet-status.sh -O package/base-files/files/etc/init.d/internet-status;chmod +x package/base-files/files/etc/init.d/internet-status;chmod 775 package/base-files/files/etc/init.d/internet-status
+wget https://script.sirherobrine23.org/Init-openwrt-internet-status -O package/base-files/files/etc/init.d/internet-status;chmod +x package/base-files/files/etc/init.d/internet-status;chmod 775 package/base-files/files/etc/init.d/internet-status
+# wget -O package/base-files/files/etc/banner
