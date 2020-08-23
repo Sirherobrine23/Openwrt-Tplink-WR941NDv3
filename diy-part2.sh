@@ -14,9 +14,16 @@ sed -i 's/UTC/UTC-3/g' package/base-files/files/bin/config_generate
 sed -i 's/set wireless.radio${devidx}.disabled=1/set wireless.radio${devidx}.disabled=0/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
 sed -i 's/set wireless.default_radio${devidx}.ssid=OpenWrt/set wireless.default_radio${devidx}.ssid=Openwrt-WR941NDv3/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
 # meus pacotes (BETA)
-[[ -e ../internet-status.sh ]] && cp ../internet-status.sh package/base-files/files/sbin/status;chmod +x package/base-files/files/sbin/status;chmod 775 package/base-files/files/sbin/status
-# ----
-[[ -e internet-status.sh ]] && cp internet-status.sh package/base-files/files/sbin/status;chmod +x package/base-files/files/sbin/status;chmod 775 package/base-files/files/sbin/status
+if [[ -e ../internet-status.sh ]]; then
+ cp ../internet-status.sh package/base-files/files/sbin/status
+ chmod +x package/base-files/files/sbin/status
+ chmod 775 package/base-files/files/sbin/status
+fi
+if [[ -e internet-status.sh ]]; then
+ cp internet-status.sh package/base-files/files/sbin/status
+ chmod +x package/base-files/files/sbin/status
+ chmod 775 package/base-files/files/sbin/status
+fi
 # init status
 echo "status &" > package/base-files/files/etc/rc.local
 echo 'exit 0' >> package/base-files/files/etc/rc.local
