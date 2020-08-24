@@ -4,8 +4,6 @@ on:
     branches:
       - master
       - main
-    paths:
-      - 'wr941nd.config'
   schedule:
     - cron: 40 15,18 * * 2,4,6
   watch:
