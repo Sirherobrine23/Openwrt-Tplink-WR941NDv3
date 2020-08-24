@@ -30,7 +30,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
 
-    - name:
+    - name: Copilando e Organizando
       run: |
         bash /home/copiler/start.sh
 
@@ -39,7 +39,6 @@ jobs:
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
         cd /home/copiler/openwrt/bin/targets/*/*
-        rm -rf packages
         echo "::set-env name=FIRMWARE::$PWD"
 
     - name: Gerando Tag
