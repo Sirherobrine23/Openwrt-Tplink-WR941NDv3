@@ -1,6 +1,6 @@
 #!/bin/sh
 LED="/sys/class/leds/tp-link:green:qss/brightness"
-URL="http://debian.sh23.org/debian/"
+URL="http://apt.sh23.org/"
 update_led="2s"
 # Iniciando o loop
 while [ true ]; do 
