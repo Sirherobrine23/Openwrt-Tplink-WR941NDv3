@@ -2,8 +2,7 @@ name: OpenWRT Tp Link WR941NDv3
 on:
   push:
     branches:
-      - master
-      - main
+      - Openwrt18
   schedule:
     - cron: 40 15,18 * * 2,4,6
   watch:
