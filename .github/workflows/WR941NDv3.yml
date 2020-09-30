@@ -11,7 +11,7 @@ on:
 
 env:
   URL: https://github.com/openwrt/openwrt
-  BRANCH: openwrt-19.07
+  BRANCH: openwrt-18.06
   FEEDS_FILE: feeds.conf.default
   CONFIG: wr941nd.config
   P1: diy-part1.sh
