@@ -41,9 +41,9 @@ jobs:
       if: env.UPLOAD_RELEASE == 'true'
       run: |
         echo "::set-env name=FILE_DATE::_$(date +"%Y%m%d%H%M")"
-        echo ::set-env name=RELEASE_NAME::"$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")-OpenWrt_WR941NDv3"
+        echo ::set-env name=RELEASE_NAME::"$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")-OpenWrt_WR941NDv3 Copliler 3"
         echo ::set-env name=RELEASE_TAG::"$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"
-        echo "OpenWRT to ${{ env.DEVICE_NAME }}, Date: ${{ env.FILE_DATE }}" >> release.txt
+        echo "OpenWRT to tl-wr941nd-v3, NOT PPP* PACKAGE, Date: ${{ env.FILE_DATE }}" >> release.txt
     
     - name: Upload do Firmware para o Release
       uses: softprops/action-gh-release@v1
