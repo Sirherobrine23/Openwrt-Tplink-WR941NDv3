@@ -7,8 +7,8 @@ on:
     types: started
 
 env:
-  URL: https://github.com/openwrt/openwrt
-  BRANCH: openwrt-18.06
+  URL: https://git.openwrt.org/openwrt/openwrt.git
+  BRANCH: openwrt-19.07
   FEEDS_FILE: feeds.conf.default
   CONFIG: wr941nd.config
   P1: diy-part1.sh
