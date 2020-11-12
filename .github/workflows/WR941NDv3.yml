@@ -1,56 +1,40 @@
-name: OpenWRT Tp Link WR941NDv3
+name: OpenWRT Github CI
 on:
   push:
-    branches:
-      - Openwrt18
   watch:
     types: started
-
-env:
-  URL: https://git.openwrt.org/openwrt/openwrt.git
-  BRANCH: openwrt-19.07
-  FEEDS_FILE: feeds.conf.default
-  CONFIG: wr941nd.config
-  P1: diy-part1.sh
-  P2: diy-part2.sh
-  UPLOAD_FIRMWARE: true
-  UPLOAD_RELEASE: true
+  schedule:
+    - cron: 40 15,18 * * 2,4,6
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: sirherobrine23/openwrtbuild-ci:latest
-    if: github.event.repository.owner.id == github.event.sender.id
+    name: Build
     steps:
     - name: Checkout
-      uses: actions/checkout@master
-
-    - name: Copilando e Organizando
-      run: |
-        bash /home/copiler/start.sh
-
-    - name: Organizando os arquivos
-      id: organize
-      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
-      run: |
-        cd /home/copiler/openwrt/bin/targets/*/*
-        echo "::set-env name=FIRMWARE::$PWD"
-
-    - name: Gerando Tag
-      id: tag
-      if: env.UPLOAD_RELEASE == 'true'
-      run: |
-        echo "::set-env name=FILE_DATE::_$(date +"%Y%m%d%H%M")"
-        echo ::set-env name=RELEASE_NAME::"$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")-OpenWrt_WR941NDv3 Copliler 3"
-        echo ::set-env name=RELEASE_TAG::"$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"
-        echo "OpenWRT to tl-wr941nd-v3, NOT PPP* PACKAGE, Date: ${{ env.FILE_DATE }}" >> release.txt
-    
-    - name: Upload do Firmware para o Release
-      uses: softprops/action-gh-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      uses: actions/checkout@main
+    - name: Copiler
+      uses: Sirherobrine23/Actions-Build-Openwrt@main
       with:
-        name: ${{ env.FILE_DATE }}
-        files: ${{ env.FIRMWARE }}/*
-        tag_name: ${{ env.RELEASE_TAG }}
+        CONFIG: 'wr941nd.config'
+        BRANCH: 'openwrt-19.07'
+        P1: 'diy-part1.sh'
+        P2: 'diy-part2.sh'
+    - name: Upload To Releases
+      uses: softprops/action-gh-release@v1
+      if: env.UPLOADTORELEASE == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
+        tag_name: ${{ github.run_id }}
         body_path: release.txt
+        files: ${{ env.FIRMWARE_PATH }}/*
+    - name: Delete Old Releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      if: env.UPLOADTORELEASE == 'true'
+      with:
+        keep_latest: 4
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
