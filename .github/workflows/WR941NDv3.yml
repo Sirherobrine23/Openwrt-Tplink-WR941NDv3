@@ -4,7 +4,7 @@ on:
   watch:
     types: started
   schedule:
-    - cron: 40 15,18 * * 2,4,6
+    - cron: 0 */2 * * */2
 
 jobs:
   build:
@@ -34,7 +34,7 @@ jobs:
       uses: dev-drprasad/delete-older-releases@v0.1.0
       if: env.UPLOADTORELEASE == 'true'
       with:
-        keep_latest: 4
+        keep_latest: 2
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
