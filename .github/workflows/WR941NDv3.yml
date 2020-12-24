@@ -7,16 +7,48 @@ on:
     - cron: 0 */2 * * */2
 
 jobs:
-  build:
+  Wireguard1:
     runs-on: ubuntu-latest
-    name: Build
+    name: Wireguard 1
     steps:
     - name: Checkout
       uses: actions/checkout@main
     - name: Copiler
       uses: Sirherobrine23/Actions-Build-Openwrt@main
       with:
-        CONFIG: 'wr941nd.config'
+        CONFIG: 'wireguard1.config'
+        BRANCH: 'v19.07.5'
+        P1: 'diy-part1.sh'
+        P2: 'diy-part2.sh'
+    - name: Upload To Releases
+      uses: softprops/action-gh-release@v1
+      if: env.UPLOADTORELEASE == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
+        tag_name: ${{ github.run_id }}
+        body_path: release.txt
+        files: ${{ env.FIRMWARE_PATH }}/*
+    - name: Delete Old Releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      if: env.UPLOADTORELEASE == 'true'
+      with:
+        keep_latest: 2
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  wireguard2:
+    runs-on: ubuntu-latest
+    name: Wireguard 2
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+    - name: Copiler
+      uses: Sirherobrine23/Actions-Build-Openwrt@main
+      with:
+        CONFIG: 'wireguard2.config'
         BRANCH: 'v19.07.5'
         P1: 'diy-part1.sh'
         P2: 'diy-part2.sh'
