@@ -4,20 +4,20 @@ on:
   watch:
     types: started
   schedule:
-    - cron: 0 */2 * * */2
+    - cron: 0 */6 * * */2
 
 jobs:
   Wireguard1:
     runs-on: ubuntu-latest
-    name: Wireguard 1
+    name: luci
     steps:
     - name: Checkout
       uses: actions/checkout@main
     - name: Copiler
       uses: Sirherobrine23/Actions-Build-Openwrt@main
       with:
-        CONFIG: 'wireguard1.config'
-        BRANCH: 'v19.07.5'
+        CONFIG: 'luci.config'
+        BRANCH: 'openwrt-19.07'
         P1: 'diy-part1.sh'
         P2: 'diy-part2.sh'
     - name: Upload To Releases
@@ -49,7 +49,7 @@ jobs:
       uses: Sirherobrine23/Actions-Build-Openwrt@main
       with:
         CONFIG: 'wireguard2.config'
-        BRANCH: 'v19.07.5'
+        BRANCH: 'openwrt-19.07'
         P1: 'diy-part1.sh'
         P2: 'diy-part2.sh'
     - name: Upload To Releases
