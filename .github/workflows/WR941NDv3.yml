@@ -27,7 +27,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
-        tag_name: ${{ github.run_id }}
+        tag_name: ${{ github.run_id }}-1
         body_path: release.txt
         files: ${{ env.FIRMWARE_PATH }}/*
     - name: Delete Old Releases
@@ -59,7 +59,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
-        tag_name: ${{ github.run_id }}
+        tag_name: ${{ github.run_id }}-2
         body_path: release.txt
         files: ${{ env.FIRMWARE_PATH }}/*
     - name: Delete Old Releases
