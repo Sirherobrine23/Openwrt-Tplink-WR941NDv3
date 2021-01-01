@@ -7,7 +7,7 @@ on:
     - cron: 0 */6 * * */2
 
 jobs:
-  Wireguard1:
+  Luci:
     runs-on: ubuntu-latest
     name: luci
     steps:
@@ -34,14 +34,14 @@ jobs:
       uses: dev-drprasad/delete-older-releases@v0.1.0
       if: env.UPLOADTORELEASE == 'true'
       with:
-        keep_latest: 2
+        keep_latest: 3
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  wireguard2:
+  wireguard:
     runs-on: ubuntu-latest
-    name: Wireguard 2
+    name: Wireguard
     steps:
     - name: Checkout
       uses: actions/checkout@main
@@ -66,7 +66,39 @@ jobs:
       uses: dev-drprasad/delete-older-releases@v0.1.0
       if: env.UPLOADTORELEASE == 'true'
       with:
-        keep_latest: 2
+        keep_latest: 3
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  CLI:
+    runs-on: ubuntu-latest
+    name: CLI
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+    - name: Copiler
+      uses: Sirherobrine23/Actions-Build-Openwrt@main
+      with:
+        CONFIG: 'cli.config'
+        BRANCH: 'openwrt-19.07'
+        P1: 'diy-part1.sh'
+        P2: 'diy-part2.sh'
+    - name: Upload To Releases
+      uses: softprops/action-gh-release@v1
+      if: env.UPLOADTORELEASE == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
+        tag_name: ${{ github.run_id }}-3
+        body_path: release.txt
+        files: ${{ env.FIRMWARE_PATH }}/*
+    - name: Delete Old Releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      if: env.UPLOADTORELEASE == 'true'
+      with:
+        keep_latest: 3
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
