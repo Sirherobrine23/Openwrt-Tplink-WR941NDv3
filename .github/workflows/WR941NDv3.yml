@@ -20,6 +20,7 @@ jobs:
         BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
+        NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
       if: env.UPLOADTORELEASE == 'true'
@@ -34,14 +35,14 @@ jobs:
       uses: dev-drprasad/delete-older-releases@v0.1.0
       if: env.UPLOADTORELEASE == 'true'
       with:
-        keep_latest: 2
+        keep_latest: 4
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   WG:
     runs-on: ubuntu-latest
-    name: Wireguard 2
+    name: Wireguard 1
     steps:
     - name: Checkout
       uses: actions/checkout@main
@@ -52,6 +53,7 @@ jobs:
         BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
+        NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
       if: env.UPLOADTORELEASE == 'true'
@@ -84,6 +86,7 @@ jobs:
         BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
+        NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
       if: env.UPLOADTORELEASE == 'true'
@@ -117,6 +120,7 @@ jobs:
         BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
+        NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
       if: env.UPLOADTORELEASE == 'true'
