@@ -42,7 +42,7 @@ jobs:
 
   WG:
     runs-on: ubuntu-latest
-    name: Wireguard 1
+    name: Wireguard without LUCI
     steps:
     - name: Checkout
       uses: actions/checkout@main
@@ -75,7 +75,7 @@ jobs:
 
   WG2:
     runs-on: ubuntu-latest
-    name: Wireguard 2
+    name: Wireguard with LUCI
     steps:
     - name: Checkout
       uses: actions/checkout@main
