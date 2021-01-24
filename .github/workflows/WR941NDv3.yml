@@ -49,7 +49,7 @@ jobs:
     - name: Copiler
       uses: Sirherobrine23/Actions-Build-Openwrt@main
       with:
-        CONFIG: 'wireguard.config'
+        CONFIG: 'wireguard-with-luci.config'
         BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
@@ -82,7 +82,7 @@ jobs:
     - name: Copiler
       uses: Sirherobrine23/Actions-Build-Openwrt@main
       with:
-        CONFIG: 'wireguard2.config'
+        CONFIG: 'wireguard-without-luci.config'
         BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
