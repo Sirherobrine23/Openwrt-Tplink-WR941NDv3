@@ -51,8 +51,8 @@ jobs:
       with:
         CONFIG: 'wireguard-with-luci.config'
         BRANCH: 'openwrt-18.06'
-        P1: 'Disabled'
-        P2: 'disabled'
+        P1: 'p1.sh'
+        P2: 'p2.sh'
         NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
