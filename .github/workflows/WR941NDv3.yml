@@ -4,15 +4,32 @@ on:
   watch:
     types: started
   schedule:
-    - cron: 0 */6 * * */3
+    - cron: 0 0 * * */3
 
 jobs:
-  Luci:
+  deleteOldReleases:
     runs-on: ubuntu-latest
-    name: luci
+    name: Delete old releases
     steps:
     - name: Checkout
       uses: actions/checkout@main
+
+    - name: Delete Old Releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      with:
+        delete_tags: true
+        keep_latest: 0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  Luci:
+    runs-on: ubuntu-latest
+    name: luci
+    needs: [deleteOldReleases]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
     - name: Copiler
       uses: Sirherobrine23/Actions-Build-Openwrt@main
       with:
@@ -21,6 +38,7 @@ jobs:
         P1: 'p1.sh'
         P2: 'p2.sh'
         NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
+
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
       if: env.UPLOADTORELEASE == 'true'
@@ -31,29 +49,24 @@ jobs:
         tag_name: ${{ github.run_id }}-LUCI
         body_path: release.txt
         files: ${{ env.FIRMWARE_PATH }}/*
-    - name: Delete Old Releases
-      uses: dev-drprasad/delete-older-releases@v0.1.0
-      if: env.UPLOADTORELEASE == 'true'
-      with:
-        keep_latest: 4
-        delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   WG:
     runs-on: ubuntu-latest
     name: Wireguard with LUCI
+    needs: [deleteOldReleases]
     steps:
     - name: Checkout
       uses: actions/checkout@main
+
     - name: Copiler
       uses: Sirherobrine23/Actions-Build-Openwrt@main
       with:
-        CONFIG: 'wireguard-with-luci.config'
+        CONFIG: 'configs/wireguard-with-luci.config'
         BRANCH: 'openwrt-18.06'
         P1: 'p1.sh'
         P2: 'p2.sh'
         NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
+
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
       if: env.UPLOADTORELEASE == 'true'
@@ -64,29 +77,24 @@ jobs:
         tag_name: ${{ github.run_id }}-WG
         body_path: release.txt
         files: ${{ env.FIRMWARE_PATH }}/*
-    - name: Delete Old Releases
-      uses: dev-drprasad/delete-older-releases@v0.1.0
-      if: env.UPLOADTORELEASE == 'true'
-      with:
-        keep_latest: 4
-        delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   WG2:
     runs-on: ubuntu-latest
     name: Wireguard without LUCI
+    needs: [deleteOldReleases]
     steps:
     - name: Checkout
       uses: actions/checkout@main
+
     - name: Copiler
       uses: Sirherobrine23/Actions-Build-Openwrt@main
       with:
-        CONFIG: 'wireguard-without-luci.config'
+        CONFIG: 'configs/wireguard-without-luci.config'
         BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
         NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
+
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
       if: env.UPLOADTORELEASE == 'true'
@@ -97,30 +105,24 @@ jobs:
         tag_name: ${{ github.run_id }}-WG2
         body_path: release.txt
         files: ${{ env.FIRMWARE_PATH }}/*
-    - name: Delete Old Releases
-      uses: dev-drprasad/delete-older-releases@v0.1.0
-      if: env.UPLOADTORELEASE == 'true'
-      with:
-        keep_latest: 4
-        delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 
   CLI:
     runs-on: ubuntu-latest
     name: CLI
+    needs: [deleteOldReleases]
     steps:
     - name: Checkout
       uses: actions/checkout@main
+
     - name: Copiler
       uses: Sirherobrine23/Actions-Build-Openwrt@main
       with:
-        CONFIG: 'cli.config'
+        CONFIG: 'configs/cli.config'
         BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
         NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
+
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
       if: env.UPLOADTORELEASE == 'true'
@@ -131,11 +133,3 @@ jobs:
         tag_name: ${{ github.run_id }}-CLI
         body_path: release.txt
         files: ${{ env.FIRMWARE_PATH }}/*
-    - name: Delete Old Releases
-      uses: dev-drprasad/delete-older-releases@v0.1.0
-      if: env.UPLOADTORELEASE == 'true'
-      with:
-        keep_latest: 4
-        delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
