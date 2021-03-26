@@ -47,7 +47,7 @@ jobs:
       with:
         name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
         tag_name: ${{ github.run_id }}-LUCI
-        body_path: release.txt
+        body_path: ${{ env.BODY_PATH }}
         files: ${{ env.FIRMWARE_PATH }}/*
 
   WG:
@@ -75,7 +75,7 @@ jobs:
       with:
         name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
         tag_name: ${{ github.run_id }}-WG
-        body_path: release.txt
+        body_path: ${{ env.BODY_PATH }}
         files: ${{ env.FIRMWARE_PATH }}/*
 
   WG2:
@@ -103,7 +103,7 @@ jobs:
       with:
         name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
         tag_name: ${{ github.run_id }}-WG2
-        body_path: release.txt
+        body_path: ${{ env.BODY_PATH }}
         files: ${{ env.FIRMWARE_PATH }}/*
 
   CLI:
@@ -131,5 +131,5 @@ jobs:
       with:
         name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
         tag_name: ${{ github.run_id }}-CLI
-        body_path: release.txt
+        body_path: ${{ env.BODY_PATH }}
         files: ${{ env.FIRMWARE_PATH }}/*
