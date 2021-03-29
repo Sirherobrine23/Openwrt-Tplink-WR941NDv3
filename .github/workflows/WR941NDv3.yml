@@ -37,7 +37,6 @@ jobs:
         BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
-        NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
 
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
@@ -47,6 +46,33 @@ jobs:
       with:
         name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
         tag_name: ${{ github.run_id }}-LUCI
+        body_path: ${{ env.BODY_PATH }}
+        files: ${{ env.FIRMWARE_PATH }}/*
+
+  mwan3:
+    runs-on: ubuntu-latest
+    name: WR941ND mwan3 
+    needs: [deleteOldReleases]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: Copiler
+      uses: Sirherobrine23/Actions-Build-Openwrt@main
+      with:
+        CONFIG: 'configs/mwan3.config'
+        BRANCH: 'openwrt-19.07'
+        P1: 'p1.sh'
+        P2: 'p2.sh'
+
+    - name: Upload To Releases
+      uses: softprops/action-gh-release@v1
+      if: env.UPLOADTORELEASE == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
+        tag_name: ${{ github.run_id }}-mwan3
         body_path: ${{ env.BODY_PATH }}
         files: ${{ env.FIRMWARE_PATH }}/*
 
@@ -65,7 +91,6 @@ jobs:
         BRANCH: 'openwrt-18.06'
         P1: 'p1.sh'
         P2: 'p2.sh'
-        NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
 
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
@@ -92,7 +117,6 @@ jobs:
         BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
-        NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
 
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
@@ -120,7 +144,6 @@ jobs:
         BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
-        NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
 
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
@@ -148,7 +171,6 @@ jobs:
         BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
-        NGROK_TOKEN: "${{ secrets.NGROK_AUTH }}"
 
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
