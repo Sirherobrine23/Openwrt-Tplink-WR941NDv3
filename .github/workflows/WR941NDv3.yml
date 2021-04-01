@@ -49,9 +49,9 @@ jobs:
         body_path: ${{ env.BODY_PATH }}
         files: ${{ env.FIRMWARE_PATH }}/*
 
-  mwan3:
+  adblock:
     runs-on: ubuntu-latest
-    name: WR941ND mwan3 
+    name: WR941ND adblock 
     needs: [deleteOldReleases]
     steps:
     - name: Checkout
@@ -60,8 +60,8 @@ jobs:
     - name: Copiler
       uses: Sirherobrine23/Actions-Build-Openwrt@main
       with:
-        CONFIG: 'configs/mwan3.config'
-        BRANCH: 'openwrt-18.06'
+        CONFIG: 'configs/adblock.config'
+        BRANCH: 'openwrt-19.07'
         P1: 'p1.sh'
         P2: 'p2.sh'
 
