@@ -61,7 +61,7 @@ jobs:
       uses: Sirherobrine23/Actions-Build-Openwrt@main
       with:
         CONFIG: 'configs/adblock.config'
-        BRANCH: 'openwrt-19.07'
+        BRANCH: 'openwrt-18.06'
         P1: 'p1.sh'
         P2: 'p2.sh'
 
@@ -72,7 +72,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
-        tag_name: ${{ github.run_id }}-mwan3
+        tag_name: ${{ github.run_id }}-adblock
         body_path: ${{ env.BODY_PATH }}
         files: ${{ env.FIRMWARE_PATH }}/*
 
