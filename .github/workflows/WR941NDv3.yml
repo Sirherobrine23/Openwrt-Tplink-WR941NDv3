@@ -15,143 +15,48 @@ jobs:
       uses: actions/checkout@main
 
     - name: Delete Old Releases
-      uses: dev-drprasad/delete-older-releases@v0.1.0
+      uses: Sirherobrine23/delete-older-releases@master
       with:
         delete_tags: true
-        keep_latest: 0
+        keep_latest: 1
+        pattern_regex: true
+        delete_tag_pattern: "Build_.*"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  Luci:
+  Build:
     runs-on: ubuntu-latest
-    name: luci
+    strategy:
+      matrix:
+        config:
+          - adblock
+          - cli
+          - luci
+          - wireguard-with-luci
+          - wireguard-without-luci
+        branches:
+          - openwrt-19.07
+          - openwrt-18.06
     needs: [deleteOldReleases]
+    name: "Openwrt: Branch${{ matrix.branch }}, Config: ${{ matrix.config }}"
     steps:
     - name: Checkout
       uses: actions/checkout@main
 
     - name: Copiler
       uses: Sirherobrine23/Actions-Build-Openwrt@main
+      continue-on-error: true
       with:
-        CONFIG: 'configs/luci.config'
-        BRANCH: 'openwrt-19.07'
-        P1: 'p1.sh'
-        P2: 'p2.sh'
+        config: "configs/${{ matrix.config }}.config"
+        branch: "{{ matrix.branch }}"
+        p1: 'p1.sh'
+        p2: 'p2.sh'
 
     - name: Upload To Releases
       uses: softprops/action-gh-release@v1
-      if: env.UPLOADTORELEASE == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
-        tag_name: ${{ github.run_id }}-LUCI
-        body_path: ${{ env.BODY_PATH }}
-        files: ${{ env.FIRMWARE_PATH }}/*
-
-  adblock:
-    runs-on: ubuntu-latest
-    name: WR941ND adblock 
-    needs: [deleteOldReleases]
-    steps:
-    - name: Checkout
-      uses: actions/checkout@main
-
-    - name: Copiler
-      uses: Sirherobrine23/Actions-Build-Openwrt@main
-      with:
-        CONFIG: 'configs/adblock.config'
-        BRANCH: 'openwrt-18.06'
-        P1: 'p1.sh'
-        P2: 'p2.sh'
-
-    - name: Upload To Releases
-      uses: softprops/action-gh-release@v1
-      if: env.UPLOADTORELEASE == 'true'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
-        tag_name: ${{ github.run_id }}-adblock
-        body_path: ${{ env.BODY_PATH }}
-        files: ${{ env.FIRMWARE_PATH }}/*
-
-  WG18:
-    runs-on: ubuntu-latest
-    name: Wireguard with LUCI in 18.06
-    needs: [deleteOldReleases]
-    steps:
-    - name: Checkout
-      uses: actions/checkout@main
-
-    - name: Copiler
-      uses: Sirherobrine23/Actions-Build-Openwrt@main
-      with:
-        CONFIG: 'configs/wireguard-with-luci.config'
-        BRANCH: 'openwrt-18.06'
-        P1: 'p1.sh'
-        P2: 'p2.sh'
-
-    - name: Upload To Releases
-      uses: softprops/action-gh-release@v1
-      if: env.UPLOADTORELEASE == 'true'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
-        tag_name: ${{ github.run_id }}-WG18
-        body_path: ${{ env.BODY_PATH }}
-        files: ${{ env.FIRMWARE_PATH }}/*
-  WG2:
-    runs-on: ubuntu-latest
-    name: Wireguard without LUCI
-    needs: [deleteOldReleases]
-    steps:
-    - name: Checkout
-      uses: actions/checkout@main
-
-    - name: Copiler
-      uses: Sirherobrine23/Actions-Build-Openwrt@main
-      with:
-        CONFIG: 'configs/wireguard-without-luci.config'
-        BRANCH: 'openwrt-19.07'
-        P1: 'p1.sh'
-        P2: 'p2.sh'
-
-    - name: Upload To Releases
-      uses: softprops/action-gh-release@v1
-      if: env.UPLOADTORELEASE == 'true'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
-        tag_name: ${{ github.run_id }}-WG2
-        body_path: ${{ env.BODY_PATH }}
-        files: ${{ env.FIRMWARE_PATH }}/*
-
-  CLI:
-    runs-on: ubuntu-latest
-    name: CLI
-    needs: [deleteOldReleases]
-    steps:
-    - name: Checkout
-      uses: actions/checkout@main
-
-    - name: Copiler
-      uses: Sirherobrine23/Actions-Build-Openwrt@main
-      with:
-        CONFIG: 'configs/cli.config'
-        BRANCH: 'openwrt-19.07'
-        P1: 'p1.sh'
-        P2: 'p2.sh'
-
-    - name: Upload To Releases
-      uses: softprops/action-gh-release@v1
-      if: env.UPLOADTORELEASE == 'true'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        name: Build to ${{ env.DEVICE_NAME }}, Run ID ${{ github.run_id }}
-        tag_name: ${{ github.run_id }}-CLI
-        body_path: ${{ env.BODY_PATH }}
-        files: ${{ env.FIRMWARE_PATH }}/*
+        name: "TP-Link WR941NDv3, Run ID: ${{ github.run_id }}, Branch: {{ matrix.branch }}"
+        tag_name: "Build_${{ github.run_id }}_{{ matrix.branch }}"
+        files: "*.bin"
