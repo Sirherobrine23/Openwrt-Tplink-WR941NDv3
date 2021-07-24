@@ -49,7 +49,7 @@ jobs:
       # continue-on-error: true
       with:
         config: "configs/${{ matrix.config }}.config"
-        branch: "{{ matrix.branch }}"
+        branch: "${{ matrix.branch }}"
         p1: 'p1.sh'
         p2: 'p2.sh'
 
