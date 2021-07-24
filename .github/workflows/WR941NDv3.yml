@@ -16,6 +16,7 @@ jobs:
 
     - name: Delete Old Releases
       uses: Sirherobrine23/delete-older-releases@master
+      continue-on-error: true
       with:
         delete_tags: true
         keep_latest: 1
