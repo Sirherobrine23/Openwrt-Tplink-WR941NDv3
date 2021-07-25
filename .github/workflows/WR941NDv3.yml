@@ -36,7 +36,7 @@ jobs:
           - wireguard-with-luci
           - wireguard-without-luci
         branch:
-          - openwrt-19.07
+          #- openwrt-19.07
           - openwrt-18.06
     needs: [deleteOldReleases]
     name: "Branch: ${{ matrix.branch }}, Config: ${{ matrix.config }}"
