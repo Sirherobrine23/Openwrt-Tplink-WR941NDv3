@@ -36,7 +36,7 @@ jobs:
           - wireguard-with-luci
           - wireguard-without-luci
         branch:
-          # - openwrt-19.07
+          - openwrt-19.07
           - openwrt-18.06
     needs: [deleteOldReleases]
     name: "Branch: ${{ matrix.branch }}, Config: ${{ matrix.config }}"
@@ -46,7 +46,6 @@ jobs:
 
     - name: Copiler
       uses: Sirherobrine23/Actions-Build-Openwrt@main
-      # continue-on-error: true
       with:
         config: "configs/${{ matrix.config }}.config"
         branch: "${{ matrix.branch }}"
@@ -58,6 +57,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: "TP-Link WR941NDv3, Run ID: ${{ github.run_id }}, Branch: {{ matrix.branch }}"
-        tag_name: "Build_${{ github.run_id }}_{{ matrix.branch }}"
-        files: "*.bin"
+        name: "TP-Link WR941NDv3, Branch: {{ matrix.branch }}, Config:${{ matrix.config }}"
+        tag_name: "Build_${{ github.run_id }}_{{ matrix.branch }}_${{ matrix.config }}"
+        body_path: "${{ env.BODYFILE }}"
+        files: |
+          ${{ env.RELEASEFOLDER }}/*
+          !${{ env.BODYFILE }}
