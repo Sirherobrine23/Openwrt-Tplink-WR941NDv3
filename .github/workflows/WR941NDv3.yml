@@ -45,7 +45,7 @@ jobs:
       uses: actions/checkout@main
 
     - name: Copiler
-      uses: Sirherobrine23/Actions-Build-Openwrt@main
+      uses: Sirherobrine23/Actions-Build-Openwrt@Dev
       with:
         config: "configs/${{ matrix.config }}.config"
         branch: "${{ matrix.branch }}"
