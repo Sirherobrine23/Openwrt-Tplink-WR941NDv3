@@ -7,25 +7,7 @@ on:
     - cron: 0 0 * * */3
 
 jobs:
-  deleteOldReleases:
-    runs-on: ubuntu-latest
-    name: Delete old releases
-    steps:
-    - name: Checkout
-      uses: actions/checkout@main
-
-    - name: Delete Old Releases
-      uses: Sirherobrine23/delete-older-releases@master
-      continue-on-error: true
-      with:
-        delete_tags: true
-        keep_latest: 1
-        pattern_regex: true
-        delete_tag_pattern: "Build_.*"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  Build:
+  OpenwrtBuild:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -33,27 +15,40 @@ jobs:
           - adblock
           - cli
           - luci
-          - wireguard-with-luci
-          - wireguard-without-luci
+          - wireguard-luci
+          - wireguard-cli
         branch:
-          #- openwrt-19.07
+          - openwrt-19.07
           - openwrt-18.06
-    needs: [deleteOldReleases]
+
     name: "Branch: ${{ matrix.branch }}, Config: ${{ matrix.config }}"
     steps:
-    - name: Checkout
+    - name: Checkout Reposiory
       uses: actions/checkout@main
 
-    - name: Copiler
+    - name: "Copiler Openwrt with config: ${{ matrix.config }}, and Branch: ${{ matrix.branch }}"
       uses: Sirherobrine23/Actions-Build-Openwrt@main
+      continue-on-error: true
       with:
         config: "configs/${{ matrix.config }}.config"
         branch: "${{ matrix.branch }}"
-        p1: 'p1.sh'
         p2: 'p2.sh'
 
-    - name: Upload To Releases
+    - name: Delete old tag and release
+      uses: Sirherobrine23/delete-older-releases@master
+      if: env.UPLOADTORELEASE == 'true'
+      continue-on-error: true
+      with:
+        delete_tags: true
+        keep_latest: 0
+        pattern_regex: true
+        delete_tag_pattern: "Build_.*_${{ matrix.branch }}_${{ matrix.config }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: "Upload with tag: Build_${{ github.run_id }}_${{ matrix.branch }}_${{ matrix.config }}"
       uses: softprops/action-gh-release@v1
+      if: env.UPLOADTORELEASE == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:

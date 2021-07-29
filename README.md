@@ -1,14 +1,31 @@
-# Configurações Padrões desse Firmeware
+# Openwrt to TP-LINK WR-941NDv3
 
-Login:
+## These compilations are Snapshots
 
-- [x]  Hostname:  `r1`
-- [x] ip padrão: `192.168.2.1`
+- Default Settings
+    - Wireless:
+        * SSID: `Openwrt-WR941NDv3`
+        * Security: `OPEN`
 
-Servidores NTPbr:
+    - Hostname: `wr941ndv3.lan`
+    - NTP Servers: `Brazil NTP Servers`
+    * Default IP: [Openwrt Default](http://192.168.1.1)
 
-- a.st1.ntp.br
-- b.st1.ntp.br
-- c.st1.ntp.br
-- d.st1.ntp.br
-  
+## Build files with your programs
+
+- luci.config:
+    - lUCI
+
+- cli.config:
+    * No Packages
+
+- adblock.config:
+    - ADBlock
+    - lUCI
+
+- wireguard-cli.config:
+    - Wireguard
+
+- wireguard-luci.config:
+    - Wireguard
+    - lUCI
