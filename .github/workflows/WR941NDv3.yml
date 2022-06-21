@@ -9,6 +9,7 @@ on:
 jobs:
   OpenwrtBuild:
     runs-on: ubuntu-latest
+    name: "Branch: ${{ matrix.branch }}, Config: ${{ matrix.config }}"
     strategy:
       matrix:
         config:
@@ -20,13 +21,11 @@ jobs:
         branch:
           - openwrt-19.07
           - openwrt-18.06
-
-    name: "Branch: ${{ matrix.branch }}, Config: ${{ matrix.config }}"
     steps:
       - name: Checkout Reposiory
         uses: actions/checkout@main
 
-      - name: "Copiler Openwrt with CONFIG: ${{ matrix.config }}, and Branch: ${{ matrix.branch }}"
+      - name: "Build, CONFIG: ${{ matrix.config }}, and Branch: ${{ matrix.branch }}"
         uses: Sirherobrine23/Actions-Build-Openwrt@main
         continue-on-error: true
         with:
@@ -34,18 +33,18 @@ jobs:
           BRANCH: "${{ matrix.branch }}"
           SCRIPT1: 'p2.sh'
 
-      - name: "Upload with tag: Build_${{ github.run_id }}_${{ matrix.branch }}_${{ matrix.config }}"
+      - name: "Upload: ${{ github.run_id }}_${{ matrix.branch }}_${{ matrix.config }}"
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: "Branch: ${{ matrix.branch }}, Config: ${{ matrix.config }}"
           tag_name: "${{ github.run_id }}_${{ matrix.branch }}_${{ matrix.config }}"
-          body: non3
-          files: "./*"
+          body: "None"
+          files: "./"
 
-     - name: Upload debian package file
-       uses: actions/upload-artifact@v3
-       with:
+      - name: Upload debian package file
+        uses: actions/upload-artifact@v3
+        with:
           name: "${{ matrix.branch }}_${{ matrix.config }}"
           path: "./"
