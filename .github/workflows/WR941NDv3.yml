@@ -41,7 +41,11 @@ jobs:
       with:
         name: "TP-Link WR941NDv3, Branch: ${{ matrix.branch }}, Config: ${{ matrix.config }}"
         tag_name: "Build_${{ github.run_id }}_${{ matrix.branch }}_${{ matrix.config }}"
-        body_path: ${{ env.BODYFILE }}
-        files: |
-          ${{ env.RELEASEFOLDER }}/*
-          !${{ env.BODYFILE }}
+        body: non3
+        files: "./*"
+
+     - name: Upload debian package file
+       uses: actions/upload-artifact@v3
+       with:
+          name: "${{ matrix.branch }}_${{ matrix.config }}"
+          path: "*"
