@@ -26,17 +26,16 @@ jobs:
     - name: Checkout Reposiory
       uses: actions/checkout@main
 
-    - name: "Copiler Openwrt with config: ${{ matrix.config }}, and Branch: ${{ matrix.branch }}"
+    - name: "Copiler Openwrt with CONFIG: ${{ matrix.config }}, and Branch: ${{ matrix.branch }}"
       uses: Sirherobrine23/Actions-Build-Openwrt@main
       continue-on-error: true
       with:
-        config: "configs/${{ matrix.config }}.config"
-        branch: "${{ matrix.branch }}"
-        p2: 'p2.sh'
+        CONFIG: "configs/${{ matrix.config }}.config"
+        BRANCH: "${{ matrix.branch }}"
+        SCRIPT1: 'p2.sh'
 
     - name: Delete old tag and release
       uses: Sirherobrine23/delete-older-releases@master
-      if: env.UPLOADTORELEASE == 'true'
       continue-on-error: true
       with:
         delete_tags: true
@@ -48,7 +47,6 @@ jobs:
 
     - name: "Upload with tag: Build_${{ github.run_id }}_${{ matrix.branch }}_${{ matrix.config }}"
       uses: softprops/action-gh-release@v1
-      if: env.UPLOADTORELEASE == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
