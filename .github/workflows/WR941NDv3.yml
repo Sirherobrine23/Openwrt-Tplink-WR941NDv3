@@ -34,17 +34,6 @@ jobs:
         BRANCH: "${{ matrix.branch }}"
         SCRIPT1: 'p2.sh'
 
-    - name: Delete old tag and release
-      uses: Sirherobrine23/delete-older-releases@master
-      continue-on-error: true
-      with:
-        delete_tags: true
-        keep_latest: 0
-        pattern_regex: true
-        delete_tag_pattern: "Build_.*_${{ matrix.branch }}_${{ matrix.config }}"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: "Upload with tag: Build_${{ github.run_id }}_${{ matrix.branch }}_${{ matrix.config }}"
       uses: softprops/action-gh-release@v1
       env:
