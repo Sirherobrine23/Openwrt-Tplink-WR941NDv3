@@ -23,29 +23,29 @@ jobs:
 
     name: "Branch: ${{ matrix.branch }}, Config: ${{ matrix.config }}"
     steps:
-    - name: Checkout Reposiory
-      uses: actions/checkout@main
+      - name: Checkout Reposiory
+        uses: actions/checkout@main
 
-    - name: "Copiler Openwrt with CONFIG: ${{ matrix.config }}, and Branch: ${{ matrix.branch }}"
-      uses: Sirherobrine23/Actions-Build-Openwrt@main
-      continue-on-error: true
-      with:
-        CONFIG: "configs/${{ matrix.config }}.config"
-        BRANCH: "${{ matrix.branch }}"
-        SCRIPT1: 'p2.sh'
+      - name: "Copiler Openwrt with CONFIG: ${{ matrix.config }}, and Branch: ${{ matrix.branch }}"
+        uses: Sirherobrine23/Actions-Build-Openwrt@main
+        continue-on-error: true
+        with:
+          CONFIG: "configs/${{ matrix.config }}.config"
+          BRANCH: "${{ matrix.branch }}"
+          SCRIPT1: 'p2.sh'
 
-    - name: "Upload with tag: Build_${{ github.run_id }}_${{ matrix.branch }}_${{ matrix.config }}"
-      uses: softprops/action-gh-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        name: "TP-Link WR941NDv3, Branch: ${{ matrix.branch }}, Config: ${{ matrix.config }}"
-        tag_name: "Build_${{ github.run_id }}_${{ matrix.branch }}_${{ matrix.config }}"
-        body: non3
-        files: "./*"
+      - name: "Upload with tag: Build_${{ github.run_id }}_${{ matrix.branch }}_${{ matrix.config }}"
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: "Branch: ${{ matrix.branch }}, Config: ${{ matrix.config }}"
+          tag_name: "${{ github.run_id }}_${{ matrix.branch }}_${{ matrix.config }}"
+          body: non3
+          files: "./*"
 
      - name: Upload debian package file
        uses: actions/upload-artifact@v3
        with:
           name: "${{ matrix.branch }}_${{ matrix.config }}"
-          path: "*"
+          path: "./"
