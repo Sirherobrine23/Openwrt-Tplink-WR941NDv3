@@ -41,6 +41,10 @@ jobs:
             Branch: ${{ matrix.branch }}
             Config File: ${{ matrix.config }}
             Device: TP-Link WR941ND (v3)
+          SCRIPT2: |
+            #!/bin/Bash
+            pwd
+            find bin/ -type f
           # Fist script before clone repo
           SCRIPT1: |
             #!/bin/bash
