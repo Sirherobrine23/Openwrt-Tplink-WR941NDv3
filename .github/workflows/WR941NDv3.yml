@@ -45,6 +45,8 @@ jobs:
             #!/bin/Bash
             pwd
             find bin/ -type f
+            sudo bash -c 'apt update && apt install -y tree's
+            tree bin/
           # Fist script before clone repo
           SCRIPT1: |
             #!/bin/bash
