@@ -51,16 +51,14 @@ jobs:
           BRANCH: "${{ matrix.branch }}"
           BASENAME: "WR941NDV3_${{ matrix.branch }}_${{ matrix.configFile }}"
           RELEASE: true
-          RELEASE_TAGNAME: "${{ github.run_id }}"
+          RELEASE_TAGNAME: "CI_v${{ github.run_id }}"
           RELEASE_BODY: |
-            Branch: ${{ matrix.branch }}
-            Config File: ${{ matrix.configFile }}
             Device: TP-Link WR941ND (v3)
           SCRIPT2: |
             #!/bin/Bash
             pwd
             find bin/ -type f
-            sudo bash -c 'apt update && apt install -y tree's
+            sudo bash -c 'apt update && apt install -y tree
             tree bin/
           # Fist script before clone repo
           SCRIPT1: |
