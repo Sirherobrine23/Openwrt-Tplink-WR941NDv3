@@ -7,9 +7,23 @@ on:
     - cron: 0 0 * * */3
 
 jobs:
+  Clean:
+    runs-on: ubuntu-latest
+    name: Build
+    steps:
+    - name: Delete Old Releases
+      uses: dev-drprasad/delete-older-releases@v0.2.0
+      with:
+        keep_latest: 2
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   OpenwrtBuild:
     runs-on: ubuntu-latest
     name: "Branch: ${{ matrix.branch }}, Config: ${{ matrix.config }}"
+    needs:
+      - Clean 
     strategy:
       matrix:
         branch:
