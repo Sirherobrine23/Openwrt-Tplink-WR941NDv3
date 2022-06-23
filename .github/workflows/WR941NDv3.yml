@@ -69,10 +69,11 @@ jobs:
 
       # Remove files
       - name: remove files
-        run: sudo rm -rfv openwrt/build_dir/
+        run: sudo chmod -R 7777 ./
 
       - name: Upload debian package file
         uses: actions/upload-artifact@v3
+        continue-on-error: true
         with:
           name: "${{ matrix.branch }}_${{ matrix.configFile }}"
           path: "./"
