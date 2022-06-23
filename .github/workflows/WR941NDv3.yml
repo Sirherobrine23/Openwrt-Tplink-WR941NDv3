@@ -15,7 +15,7 @@ jobs:
         branch:
           - openwrt-19.07
           - openwrt-18.06
-        config:
+        configFile:
           - adblock
           - cli
           - luci
@@ -27,19 +27,20 @@ jobs:
       - name: Checkout Reposiory
         uses: actions/checkout@main
 
-      - name: "Build, CONFIG: ${{ matrix.config }}, and Branch: ${{ matrix.branch }}"
+      - name: "Build, CONFIG: ${{ matrix.configFile }}, and Branch: ${{ matrix.branch }}"
         uses: Sirherobrine23/Actions-Build-Openwrt@main
         continue-on-error: true
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
-          CONFIG: "configs/${{ matrix.config }}.config"
+          CONFIG: "configs/${{ matrix.configFile }}.config"
           BRANCH: "${{ matrix.branch }}"
+          BASENAME: "WR941NDV3_${{ matrix.branch }}_${{ matrix.configFile }}"
           RELEASE: true
-          RELEASE_TAGNAME: "${{ github.run_id }}_${{ matrix.branch }}_${{ matrix.config }}"
+          RELEASE_TAGNAME: "${{ github.run_id }}"
           RELEASE_BODY: |
             Branch: ${{ matrix.branch }}
-            Config File: ${{ matrix.config }}
+            Config File: ${{ matrix.configFile }}
             Device: TP-Link WR941ND (v3)
           SCRIPT2: |
             #!/bin/Bash
@@ -74,5 +75,5 @@ jobs:
       - name: Upload debian package file
         uses: actions/upload-artifact@v3
         with:
-          name: "${{ matrix.branch }}_${{ matrix.config }}"
+          name: "${{ matrix.branch }}_${{ matrix.configFile }}"
           path: "./"
