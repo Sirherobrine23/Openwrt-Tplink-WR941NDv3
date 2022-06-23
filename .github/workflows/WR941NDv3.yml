@@ -69,8 +69,7 @@ jobs:
 
       # Remove files
       - name: remove files
-        run:
-          rm -rfv openwrt/build_dir/
+        run: sudo rm -rfv openwrt/build_dir/
 
       - name: Upload debian package file
         uses: actions/upload-artifact@v3
